@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — Explore Zone</title>
+<link rel="icon" type="image/svg+xml" href="assets/site-icon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+<div class="login-card">
+  <img class="login-icon" src="assets/site-icon.svg" alt="">
+  <p class="crumb">EXPLORE ZONE</p>
+  <h1>Sign in to save your progress</h1>
+  <p class="login-copy">Use your Google account to keep your XP, streaks, badges, and game progress available on your other devices.</p>
+  <button id="googleLogin" class="google-button"><span class="google-g">G</span> Continue with Google</button>
+  <div class="divider"><span>or</span></div>
+  <button id="demoLogin" class="demo-button">Continue in demo mode</button>
+  <p class="small">Google saving becomes active after you add your Supabase project settings in <code>js/config.js</code>.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script><script src="js/sounds.js"></script>
+</body>
+</html>

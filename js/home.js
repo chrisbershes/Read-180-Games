@@ -1,0 +1,1 @@
+const s=getSave();document.getElementById('xp').textContent=s.xp.toLocaleString();const pct=Math.min(100,Math.round(s.xp/50));document.getElementById('progress').style.width=pct+'%';document.getElementById('progressText').textContent=s.xp?`Level ${Math.floor(s.xp/1000)+1} • ${s.streak} day streak`:'Start a game to begin.';
