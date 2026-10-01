@@ -8,17 +8,17 @@
     'word-builder': {
       title: 'How to play Word Builder',
       body: 'Read the definition, then click the letters in the correct order to build the vocabulary word.',
-      tips: ['Click Clear if you want to start your answer again.', 'Finish the challenge to earn XP and build your streak.', 'Use the speaker button to hear the definition aloud.']
+      tips: ['One correct letter is blocked each round. Use Unlock Letter when you need it.', 'Click Clear if you want to start your answer again.', 'Finish the challenge to earn XP and build your streak.']
     },
     'word-match': {
       title: 'How to play Word Match',
       body: 'Choose a word, then choose the meaning that matches it. Keep matching until the round is complete.',
-      tips: ['Use the two columns to find the correct pair.', 'Correct matches earn XP.', 'Use the speaker button to hear the instructions.']
+      tips: ['Watch for the extra decoy meaning that does not belong to any word.', 'Correct matches earn XP.', 'Use the speaker button to hear the instructions.']
     },
     'story-quest': {
       title: 'How to play Story Quest',
       body: 'Read the story carefully, then choose the answer that best matches what you read.',
-      tips: ['Read every question before choosing an answer.', 'Correct answers earn XP.', 'Use the speaker button to hear the story aloud.']
+      tips: ['After a few seconds the story can enter Memory Fog. Use Review Story when you need to see it again.', 'Correct answers earn XP.', 'Use the speaker button to hear the story aloud.']
     }
   };
 

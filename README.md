@@ -37,3 +37,14 @@ For GitHub Pages, the Supabase Auth Site URL and Redirect URL should be exactly:
 https://chrisbershes.github.io/Read-180-Games/
 
 Google OAuth's authorized redirect URI remains the Supabase callback URL shown in the Supabase Google provider settings.
+
+## Settings and game-specific challenges
+
+- **Dark Mode** — saved locally on the device.
+- **Full Screen** — uses the browser's Fullscreen API.
+- **Larger Screen** — enlarges the game interface.
+- **Speech Volume** — controls browser text-to-speech volume.
+- **Sound Effects** — controls button and gameplay feedback sounds.
+- **Word Builder obstacle** — one correct letter is blocked until it is unlocked.
+- **Word Match obstacle** — an extra decoy meaning is added to the board.
+- **Story Quest obstacle** — Memory Fog can blur the story after several seconds; Review Story reveals it again.
