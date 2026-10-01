@@ -1,7 +1,8 @@
-// Add your Supabase project values here after creating the project.
-// These two values are safe for browser use when Row Level Security is configured.
-// NEVER put a Supabase service-role key in this file.
+// READ 180 Games - Supabase browser configuration
+// The publishable/anon key is safe to use in a browser when RLS is enabled.
+// NEVER put a Supabase service-role/secret key here.
 window.SUPABASE_CONFIG = {
-  url: "YOUR_SUPABASE_PROJECT_URL",
-  anonKey: "YOUR_SUPABASE_ANON_KEY"
+  url: "https://xfuetdrzbycwtadgnjpw.supabase.co",
+  publishableKey: "sb_publishable_p3N6VBygmKLuPpCM4QPRLw_SpLfY2kQ",
+  siteUrl: "https://chrisbershes.github.io/Read-180-Games/"
 };

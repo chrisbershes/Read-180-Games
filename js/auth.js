@@ -1,20 +1,136 @@
-let supabaseClient=null;
-function supabaseReady(){return window.SUPABASE_CONFIG && !window.SUPABASE_CONFIG.url.startsWith('YOUR_') && !window.SUPABASE_CONFIG.anonKey.startsWith('YOUR_')}
-async function loadSupabase(){if(!supabaseReady())return null;if(window.supabase)return window.supabase.createClient(window.SUPABASE_CONFIG.url,window.SUPABASE_CONFIG.anonKey);return null}
-async function googleLogin(){
-  const client=await loadSupabase();
-  if(!client){alert('Google login is not configured yet. Add your Supabase URL and anon key to js/config.js. Demo mode is available for testing.');return}
-  const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/,'/'); const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:base}});
-  if(error) alert(error.message);
+let supabaseClient = null;
+let currentUser = null;
+
+function supabaseReady() {
+  const c = window.SUPABASE_CONFIG;
+  return !!(
+    c &&
+    typeof window.supabase !== 'undefined' &&
+    c.url &&
+    c.publishableKey &&
+    !c.publishableKey.includes('PASTE_YOUR_SUPABASE')
+  );
 }
-async function initAuth(){
-  const client=await loadSupabase();supabaseClient=client;
-  if(client){const {data}=await client.auth.getUser();if(data.user)window.currentUser=data.user;}
-  const user=window.currentUser;
-  document.querySelectorAll('#userName,#profileName').forEach(e=>{if(user)e.textContent=user.user_metadata?.full_name||user.email||'Student'});
-  document.querySelectorAll('#loginBtn,#profileLogin,#googleLogin').forEach(b=>b?.addEventListener('click',googleLogin));
-  document.getElementById('demoLogin')?.addEventListener('click',()=>{localStorage.setItem('read180_demo_user','1');location.href='index.html'});
-  document.getElementById('logoutBtn')?.addEventListener('click',async()=>{if(client)await client.auth.signOut();localStorage.removeItem('read180_demo_user');location.href='index.html'});
+
+function getSiteUrl() {
+  const configured = window.SUPABASE_CONFIG?.siteUrl;
+  if (configured) return configured;
+  return window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
 }
-window.syncSave=async function(data){if(!supabaseClient||!window.currentUser)return;/* Database sync is enabled after the SQL migration is installed. */};
-initAuth();
+
+async function loadSupabase() {
+  if (!supabaseReady()) return null;
+  if (supabaseClient) return supabaseClient;
+  supabaseClient = window.supabase.createClient(
+    window.SUPABASE_CONFIG.url,
+    window.SUPABASE_CONFIG.publishableKey,
+    { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+  );
+  return supabaseClient;
+}
+
+async function googleLogin() {
+  const client = await loadSupabase();
+  if (!client) {
+    alert('Google login is not configured yet. Add your Supabase publishable key to js/config.js.');
+    return;
+  }
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: getSiteUrl() }
+  });
+  if (error) alert(error.message);
+}
+
+async function loadCloudSave(user) {
+  if (!supabaseClient || !user) return;
+  const { data, error } = await supabaseClient
+    .from('player_progress')
+    .select('xp, streak, word_builder_score, badges')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Cloud save load failed:', error);
+    return;
+  }
+
+  if (data) {
+    const local = getSave();
+    const cloud = {
+      xp: data.xp,
+      streak: data.streak,
+      wordBuilderScore: data.word_builder_score,
+      badges: Array.isArray(data.badges) ? data.badges : []
+    };
+    // The cloud record is authoritative after sign-in. This prevents an old local
+    // browser save from silently overwriting a player's account save.
+    setLocalSave(cloud);
+  } else {
+    await syncSave(getSave());
+  }
+}
+
+async function syncSave(data) {
+  if (!supabaseClient || !currentUser) return;
+  const normalized = normalizeSave(data);
+  const { error } = await supabaseClient.from('player_progress').upsert({
+    user_id: currentUser.id,
+    xp: normalized.xp,
+    streak: normalized.streak,
+    word_builder_score: normalized.wordBuilderScore,
+    badges: normalized.badges,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id' });
+
+  if (error) console.error('Cloud save sync failed:', error);
+}
+
+window.syncSave = syncSave;
+
+async function initAuth() {
+  const client = await loadSupabase();
+
+  if (client) {
+    const { data: { user } } = await client.auth.getUser();
+    currentUser = user || null;
+    window.currentUser = currentUser;
+    if (currentUser) await loadCloudSave(currentUser);
+
+    client.auth.onAuthStateChange(async (_event, session) => {
+      currentUser = session?.user || null;
+      window.currentUser = currentUser;
+      if (currentUser) await loadCloudSave(currentUser);
+      updateAccountUI();
+      window.dispatchEvent(new CustomEvent('read180-auth-ready', { detail: { user: currentUser } }));
+    });
+  }
+
+  updateAccountUI();
+  document.querySelectorAll('#loginBtn, #profileLogin, #googleLogin').forEach(button => {
+    button?.addEventListener('click', googleLogin);
+  });
+  document.getElementById('demoLogin')?.addEventListener('click', () => {
+    localStorage.setItem('read180_demo_user', '1');
+    window.location.href = getSiteUrl();
+  });
+  document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    if (client) await client.auth.signOut();
+    localStorage.removeItem('read180_demo_user');
+    window.location.href = getSiteUrl();
+  });
+
+  window.dispatchEvent(new CustomEvent('read180-auth-ready', { detail: { user: currentUser } }));
+}
+
+function updateAccountUI() {
+  const user = currentUser;
+  const name = user?.user_metadata?.full_name || user?.email || 'Guest';
+  document.querySelectorAll('#userName, #profileName').forEach(el => { el.textContent = name; });
+  document.querySelectorAll('#loginBtn, #profileLogin').forEach(el => el.classList.toggle('hidden', !!user));
+  document.querySelectorAll('#logoutBtn').forEach(el => el.classList.toggle('hidden', !user));
+  const status = document.getElementById('saveStatus');
+  if (status) status.textContent = user ? 'Cloud save active' : 'Local demo save';
+}
+
+window.read180AuthReady = initAuth();

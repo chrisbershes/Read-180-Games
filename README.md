@@ -1,33 +1,52 @@
-# Explore Zone / READ 180-style Game Center
+# READ 180 Games — GitHub Pages + Supabase
 
-This build changes the visual direction toward the supplied reference:
-- vivid red/orange environment
-- white centered activity panel
-- Explore Zone breadcrumb navigation
-- compact top-right account controls
-- educational activity cards
-- website favicon/site icon
-- Google sign-in entry point
-- Word Builder game
+This build is configured for:
 
-## Google account saving
+https://chrisbershes.github.io/Read-180-Games/
 
-1. Create a Supabase project.
-2. In Supabase Authentication, enable Google provider and configure the Google OAuth credentials.
-3. Add your deployed site's URL to the allowed redirect URLs.
-4. Put your Supabase project URL and anon/publishable key in `js/config.js`.
-5. Run `supabase/schema.sql` in the Supabase SQL editor.
-6. Replace the placeholder sync function in `js/auth.js` with the database upsert once your project is configured.
+## 1. Add the Supabase publishable key
 
-The frontend must never contain a Supabase service-role key.
+Open `js/config.js` and replace:
 
-Until configured, use "Continue in demo mode" to test the site.
+`PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE`
 
+with the **publishable/anon key** from your Supabase project's API settings.
 
-## GitHub Pages
+Never put a Supabase service-role/secret key in this repository.
 
-Yes, this project can be hosted as a static GitHub Pages site. Push the extracted files to a repository and enable Pages from the repository's Settings → Pages. After Pages gives you the live URL, add that exact URL to Supabase Authentication → URL Configuration and to the Google OAuth redirect/authorized settings.
+## 2. Run the database SQL
 
-## Sounds
+In Supabase SQL Editor, run `supabase/schema.sql`.
 
-The speaker buttons now use the browser's Speech Synthesis API, so clicking 🔊 reads the activity instruction or definition aloud. The site also uses Web Audio for small interface feedback sounds; no copyrighted audio files are bundled.
+The policies allow each signed-in user to read, insert, and update only their own `player_progress` row.
+
+## 3. Supabase URL configuration
+
+Site URL:
+
+`https://chrisbershes.github.io/Read-180-Games/`
+
+Redirect URL:
+
+`https://chrisbershes.github.io/Read-180-Games/`
+
+## 4. Google OAuth
+
+In Google Cloud, the Authorized JavaScript origin should be:
+
+`https://chrisbershes.github.io`
+
+The Google OAuth redirect URI should remain the Supabase callback:
+
+`https://xfuetdrzbycwtadgnjpw.supabase.co/auth/v1/callback`
+
+## 5. What is fixed
+
+- Google OAuth uses the explicit GitHub Pages URL.
+- Supabase JS v2 is loaded before the application scripts.
+- The Supabase client uses the publishable key.
+- Signed-in progress is loaded from `player_progress` before the game starts.
+- Game progress is written to local storage and upserted to Supabase.
+- Auth state changes refresh the account UI.
+- The SQL is safe to rerun because existing policies are dropped before recreation.
+- No service-role key is required by the browser.

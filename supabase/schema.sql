@@ -1,3 +1,4 @@
+-- READ 180 Games cloud save schema
 create table if not exists public.player_progress (
   user_id uuid primary key references auth.users(id) on delete cascade,
   xp integer not null default 0,
@@ -8,6 +9,10 @@ create table if not exists public.player_progress (
 );
 
 alter table public.player_progress enable row level security;
+
+drop policy if exists "Players can read their own progress" on public.player_progress;
+drop policy if exists "Players can insert their own progress" on public.player_progress;
+drop policy if exists "Players can update their own progress" on public.player_progress;
 
 create policy "Players can read their own progress"
 on public.player_progress for select
