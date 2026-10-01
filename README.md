@@ -29,3 +29,11 @@ Supabase Authentication > Providers > Google should contain the Google Web OAuth
 Supabase Authentication > URL Configuration should allow:
 
 `https://chrisbershes.github.io/Read-180-Games/`
+
+## Login UI update
+When Google sign-in succeeds, the top-right Guest control becomes the signed-in user's Google name (including first and last name when Google provides it). Clicking the name opens a dropdown with the account email and Sign out. The Profile button on the home page also changes from Sign in with Google to Sign out.
+
+For GitHub Pages, the Supabase Auth Site URL and Redirect URL should be exactly:
+https://chrisbershes.github.io/Read-180-Games/
+
+Google OAuth's authorized redirect URI remains the Supabase callback URL shown in the Supabase Google provider settings.
