@@ -13,7 +13,7 @@
     'word-match': {
       title: 'How to play Word Match',
       body: 'Choose a word, then choose the meaning that matches it. Keep matching until the round is complete.',
-      tips: ['Watch for the extra decoy meaning that does not belong to any word.', 'Correct matches earn XP.', 'Use the speaker button to hear the instructions.']
+      tips: ['Choose the meaning that best fits the word.', 'Correct matches earn XP.', 'Use the speaker button to hear the instructions.']
     },
     'story-quest': {
       title: 'How to play Story Quest',
