@@ -4,9 +4,14 @@ create table if not exists public.player_progress (
   xp integer not null default 0,
   streak integer not null default 0,
   word_builder_score integer not null default 0,
+  word_match_score integer not null default 0,
+  story_quest_score integer not null default 0,
   badges jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+alter table public.player_progress add column if not exists word_match_score integer not null default 0;
+alter table public.player_progress add column if not exists story_quest_score integer not null default 0;
 
 alter table public.player_progress enable row level security;
 

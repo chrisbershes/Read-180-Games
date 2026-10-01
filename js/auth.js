@@ -46,7 +46,7 @@ async function loadCloudSave(user) {
   if (!supabaseClient || !user) return;
   const { data, error } = await supabaseClient
     .from('player_progress')
-    .select('xp, streak, word_builder_score, badges')
+    .select('xp, streak, word_builder_score, word_match_score, story_quest_score, badges')
     .eq('user_id', user.id)
     .maybeSingle();
 
@@ -61,6 +61,8 @@ async function loadCloudSave(user) {
       xp: data.xp,
       streak: data.streak,
       wordBuilderScore: data.word_builder_score,
+      wordMatchScore: data.word_match_score,
+      storyQuestScore: data.story_quest_score,
       badges: Array.isArray(data.badges) ? data.badges : []
     };
     // The cloud record is authoritative after sign-in. This prevents an old local
@@ -79,6 +81,8 @@ async function syncSave(data) {
     xp: normalized.xp,
     streak: normalized.streak,
     word_builder_score: normalized.wordBuilderScore,
+    word_match_score: normalized.wordMatchScore,
+    story_quest_score: normalized.storyQuestScore,
     badges: normalized.badges,
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id' });
